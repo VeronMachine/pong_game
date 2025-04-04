@@ -1,6 +1,6 @@
 #include <raylib.h>
-#include "code/game/ball.hpp"
-#include "code/game/constants.hpp"
+#include "game/ball.hpp"
+#include "game/constants.hpp"
 
 namespace game {
 
