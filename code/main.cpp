@@ -13,32 +13,37 @@ int main() {
 
     std::printf("Starting the game");
 
-    const int32_t screen_width = 1280;
-    const int32_t screen_height = 800;
+    constexpr int32_t screen_width = 1280;
+    constexpr int32_t screen_height = 800;
+    constexpr float paddle_width{ 25.0f };
+    constexpr float paddle_height{ 120.0f };
 
     const Vector2 screen_center{
         static_cast<float>(screen_width / 2),
         static_cast<float>(screen_height / 2)
     };
 
-    InitWindow(screen_width, screen_height, "My Pong Game!");
+    InitWindow(screen_width, screen_height, "Wimbledon Cup");
     SetTargetFPS(60);
 
     game::ball ball{ 20.0f, screen_center, Vector2{ 7.0f, 7.0f }};
 
-    game::paddle player;
-    player.width = 25;
-    player.height = 120;
-    player.x = screen_width - player.width - 10;
-    player.y = screen_center.y - player.height / 2;
-    player.speed = 6;
+    game::paddle player{
+        Rectangle{
+            screen_width - paddle_width - 10,
+            screen_center.y - paddle_height,
+            paddle_width, paddle_height,
+        },
+        6
+    };
 
-    game::cpu_paddle cpu;
-    cpu.height = 120;
-    cpu.width = 25;
-    cpu.x = 10;
-    cpu.y = screen_center.y - cpu.height / 2;
-    cpu.speed = 6;
+    game::cpu_paddle cpu{
+        Rectangle{ 10,
+            screen_center.y - paddle_height /2,
+            paddle_width, paddle_height,
+        },
+        6
+    };
 
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -57,12 +62,12 @@ int main() {
         }
 
         player.update();
-        cpu.Update(ball.get_position().y);
+        cpu.cpu_update(ball.get_position().y);
 
-        // Checking for collisions
-        if (CheckCollisionCircleRec(ball.get_position(), ball.get_radius(), {player.x, player.y, player.width, player.height})) {
+        // Checking for collisions,  can be used inside ball.cpp (do a "collide(cpu.get_rect)" method)
+        if (CheckCollisionCircleRec(ball.get_position(), ball.get_radius(), player.get_rect())) {
             ball.set_velocity_x(-ball.get_velocity().x);
-        } else if (CheckCollisionCircleRec(ball.get_position(), ball.get_radius(), {cpu.x, cpu.y, cpu.width, cpu.height})) {
+        } else if (CheckCollisionCircleRec(ball.get_position(), ball.get_radius(), cpu.get_rect())) {
             ball.set_velocity_x(-ball.get_velocity().x);
         }
 
