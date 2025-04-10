@@ -2,7 +2,7 @@
 
 namespace game {
 
-class Paddle {
+class paddle {
 protected:
     void LimitMovement();
 
@@ -12,11 +12,11 @@ public:
     float width, height;
     int speed;
 
-    void Draw();
-    void Update();
+    void draw();
+    void update();
 };
 
-class CpuPaddle : public Paddle {
+class cpu_paddle : public paddle {
 public:
     void Update(int ball_y);
 };
