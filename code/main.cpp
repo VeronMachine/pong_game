@@ -24,6 +24,13 @@ int main() {
     };
 
     InitWindow(screen_width, screen_height, "Wimbledon Cup");
+
+    InitAudioDevice();
+
+    Sound fx_paddle = LoadSound("resources/Paddle.wav");
+    Sound fx_wall = LoadSound("resources/Wall.wav");
+    Sound fx_win = LoadSound("resources/Win.wav");
+
     SetTargetFPS(60);
 
     game::ball ball{ 20.0f, screen_center, Vector2{ 7.0f, 7.0f }};
@@ -52,12 +59,20 @@ int main() {
 
         ball.update();
 
+        if (ball.upper_bound() <= 0) {
+            PlaySound(fx_wall);
+        } else if (ball.lower_bound() >= GetScreenHeight()) {
+            PlaySound(fx_wall);
+        }
+
 
         if (ball.right_bound() >= GetScreenWidth()) {
             cpu_score++;
+            PlaySound (fx_win);
             ball.reset();
         } else if (ball.left_bound() <= 0) {
             player_score++;
+            PlaySound (fx_win);
             ball.reset();
         }
 
@@ -66,8 +81,10 @@ int main() {
 
         // Checking for collisions,  can be used inside ball.cpp (do a "collide(cpu.get_rect)" method)
         if (CheckCollisionCircleRec(ball.get_position(), ball.get_radius(), player.get_rect())) {
+            PlaySound (fx_paddle);
             ball.set_velocity_x(-ball.get_velocity().x);
         } else if (CheckCollisionCircleRec(ball.get_position(), ball.get_radius(), cpu.get_rect())) {
+            PlaySound (fx_paddle);
             ball.set_velocity_x(-ball.get_velocity().x);
         }
 
@@ -84,6 +101,12 @@ int main() {
 
         EndDrawing();
     }
+
+    UnloadSound(fx_paddle);
+    UnloadSound(fx_wall);
+    UnloadSound(fx_win);
+
+    CloseAudioDevice();
 
     CloseWindow();
     return 0;
